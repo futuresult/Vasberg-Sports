@@ -2,51 +2,255 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vasberg Sports – Admin</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 30px 20px;
-      background: #101010;
-      color: #f5f5f5;
-      font-family: Arial, sans-serif;
-    }
-    main {
-      max-width: 650px;
-      margin: 50px auto;
-    }
-    h1 { color: #d4af37; }
-    p { color: #bbb; line-height: 1.6; }
-    a {
-      display: block;
-      margin: 14px 0;
-      padding: 17px;
-      background: #202020;
-      border: 1px solid #8e7020;
-      border-radius: 8px;
-      color: #e3c35b;
-      text-decoration: none;
-    }
-    a:hover { background: #303030; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vasberg Sports | Admin</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:#eee;font-family:Arial,sans-serif}
+header{padding:24px;background:#080808;border-bottom:1px solid #b99a42}
+header h1{margin:0;color:#d4af37;letter-spacing:3px}
+header p{color:#999;margin-bottom:0}
+main{max-width:1050px;margin:auto;padding:22px}
+.status{padding:12px;background:#202020;border-left:3px solid #d4af37;margin-bottom:20px}
+nav,.actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+button,.button{background:#242424;border:1px solid #806a2b;color:#e5c65d;padding:12px 15px;border-radius:5px;cursor:pointer;font-weight:bold}
+button:hover,.button:hover{background:#383020}
+button.active{background:#806a2b;color:white}
+.panel{background:#191919;border:1px solid #383838;padding:20px;border-radius:8px;margin-bottom:20px}
+h2{color:#d4af37;margin-top:0}
+h3{color:#e5c65d}
+.help{color:#aaa;line-height:1.6}
+textarea{width:100%;min-height:300px;background:#090909;color:#eee;border:1px solid #806a2b;border-radius:5px;padding:15px;font:14px/1.6 monospace}
+input,select{width:100%;padding:12px;margin:6px 0 14px;background:#090909;color:#fff;border:1px solid #806a2b;border-radius:5px}
+label{display:block;color:#ccc;font-size:14px}
+.team-card{border:1px solid #49402a;padding:16px;border-radius:7px;margin:15px 0;background:#141414}
+.team-card button{margin-right:6px}
+.danger{border-color:#923e3e;color:#ffaaaa}
+.hidden{display:none!important}
+input[type=file]{display:none}
+footer{text-align:center;color:#777;padding:30px}
+</style>
 </head>
 <body>
-  <main>
-    <h1>VASBERG SPORTS</h1>
-    <h2>Adminisztráció</h2>
-    <p>
-      A tartalom módosításához jelentkezz be a GitHub-fiókoddal.
-      A mentett változtatások a weboldalon is megjelennek a közzététel után.
-    </p>
-    <a href="https://github.com/futuresult/Vasberg-Sports/edit/main/data/site-data.json">
-      Csapatok, eredmények, tabellák, szponzorok és hírek szerkesztése
-    </a>
-    <a href="https://github.com/futuresult/Vasberg-Sports">
-      Vissza a GitHub-repozitóriumhoz
-    </a>
-    <a href="index.html">Vissza a weboldalra</a>
-  </main>
+<header>
+<h1>VASBERG SPORTS</h1>
+<p>Content Management System</p>
+</header>
+
+<main>
+<div class="status" id="status">Adatok betöltése...</div>
+
+<nav id="tabs">
+<button class="active" data-section="teams">Csapatok</button>
+<button data-section="matches">Mérkőzések</button>
+<button data-section="standings">Tabellák</button>
+<button data-section="sponsors">Szponzorok</button>
+<button data-section="news">Hírek</button>
+</nav>
+
+<section class="panel" id="teamPanel">
+<h2>Csapatok kezelése</h2>
+<p class="help">Itt módosíthatod a csapatok adatait, hozzáadhatsz új csapatot vagy törölheted a meglévőket.</p>
+<div id="teamList"></div>
+<button id="addTeam">+ Új csapat hozzáadása</button>
+</section>
+
+<section class="panel hidden" id="jsonPanel">
+<h2 id="sectionTitle">Mérkőzések</h2>
+<p class="help">A többi adatkategória egyelőre JSON-formátumban szerkeszthető.</p>
+<textarea id="editor" spellcheck="false"></textarea>
+<div class="actions">
+<button id="saveSection">Módosítás alkalmazása</button>
+</div>
+</section>
+
+<section class="panel">
+<h2>Adatok mentése</h2>
+<p class="help">A módosítások alkalmazása után töltsd le a teljes adatfájlt, majd töltsd fel a GitHub data mappájába.</p>
+<div class="actions">
+<button id="download">Teljes JSON letöltése</button>
+<label class="button" for="upload">JSON betöltése</label>
+<input id="upload" type="file" accept=".json,application/json">
+<button id="reload">Eredeti adatok újratöltése</button>
+</div>
+<a class="button" href="https://github.com/futuresult/Vasberg-Sports/tree/main/data" target="_blank" rel="noopener">GitHub adatfájlok</a>
+</section>
+</main>
+
+<footer>© VASBERG SPORTS</footer>
+
+<script>
+const sections={
+ teams:"Csapatok",
+ matches:"Mérkőzések",
+ standings:"Tabellák",
+ sponsors:"Szponzorok",
+ news:"Hírek"
+};
+
+let data={};
+let currentSection="teams";
+
+const statusBox=document.getElementById("status");
+const teamPanel=document.getElementById("teamPanel");
+const jsonPanel=document.getElementById("jsonPanel");
+const editor=document.getElementById("editor");
+
+function status(message){
+ statusBox.textContent=message;
+}
+
+async function loadData(){
+ try{
+  const response=await fetch("data/site-data.json",{cache:"no-store"});
+  if(!response.ok)throw new Error("HTTP "+response.status);
+  data=await response.json();
+
+  for(const key of Object.keys(sections)){
+   if(!Array.isArray(data[key]))data[key]=[];
+  }
+
+  status("Az adatok sikeresen betöltődtek.");
+ }catch(error){
+  data={
+   teams:[
+    {id:"narda",name:"Narda",sport:"Football",description:"",logo:""},
+    {id:"handball-vasberg",name:"Handball Vasberg",sport:"Handball",description:"",logo:""},
+    {id:"vasberg-basketball",name:"Vasberg Basketball",sport:"Basketball",description:"",logo:""}
+   ],
+   matches:[],standings:[],sponsors:[],news:[]
+  };
+  status("Nem sikerült betölteni az adatokat. Az alapértelmezett csapatlista látható.");
+ }
+ render();
+}
+
+function render(){
+ const isTeams=currentSection==="teams";
+ teamPanel.classList.toggle("hidden",!isTeams);
+ jsonPanel.classList.toggle("hidden",isTeams);
+
+ document.querySelectorAll("#tabs button").forEach(button=>{
+  button.classList.toggle("active",button.dataset.section===currentSection);
+ });
+
+ if(isTeams){
+  renderTeams();
+ }else{
+  document.getElementById("sectionTitle").textContent=sections[currentSection];
+  editor.value=JSON.stringify(data[currentSection]||[],null,2);
+ }
+}
+
+function renderTeams(){
+ const list=document.getElementById("teamList");
+ list.innerHTML="";
+
+ data.teams.forEach((team,index)=>{
+  const card=document.createElement("div");
+  card.className="team-card";
+
+  const heading=document.createElement("h3");
+  heading.textContent=team.name||"Új csapat";
+  card.appendChild(heading);
+
+  const fields=[
+   ["Csapat neve","name",team.name],
+   ["Sportág","sport",team.sport],
+   ["Bemutatkozás","description",team.description],
+   ["Logó fájl elérési útja","logo",team.logo]
+  ];
+
+  fields.forEach(([label,key,value])=>{
+   const wrapper=document.createElement("label");
+   wrapper.textContent=label;
+   const input=document.createElement("input");
+   input.value=value||"";
+   input.addEventListener("input",()=>{
+    team[key]=input.value;
+    heading.textContent=team.name||"Új csapat";
+   });
+   wrapper.appendChild(input);
+   card.appendChild(wrapper);
+  });
+
+  const remove=document.createElement("button");
+  remove.className="danger";
+  remove.textContent="Csapat törlése";
+  remove.addEventListener("click",()=>{
+   if(confirm("Biztosan törlöd ezt a csapatot?")){
+    data.teams.splice(index,1);
+    renderTeams();
+    status("A csapat törölve. A véglegesítéshez töltsd le az adatfájlt.");
+   }
+  });
+  card.appendChild(remove);
+  list.appendChild(card);
+ });
+}
+
+document.querySelectorAll("#tabs button").forEach(button=>{
+ button.addEventListener("click",()=>{
+  currentSection=button.dataset.section;
+  render();
+ });
+});
+
+document.getElementById("addTeam").addEventListener("click",()=>{
+ data.teams.push({
+  id:"team-"+Date.now(),
+  name:"Új csapat",
+  sport:"",
+  description:"",
+  logo:""
+ });
+ renderTeams();
+ status("Új csapat hozzáadva. Töltsd ki az adatait.");
+});
+
+document.getElementById("saveSection").addEventListener("click",()=>{
+ try{
+  const parsed=JSON.parse(editor.value);
+  if(!Array.isArray(parsed))throw new Error("JSON-tömb szükséges.");
+  data[currentSection]=parsed;
+  status("A(z) "+sections[currentSection]+" módosításai alkalmazva.");
+ }catch(error){
+  status("Hibás JSON: "+error.message);
+ }
+});
+
+document.getElementById("download").addEventListener("click",()=>{
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+ link.href=url;
+ link.download="site-data.json";
+ link.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+ status("A teljes adatfájl letöltése elindult.");
+});
+
+document.getElementById("upload").addEventListener("change",async event=>{
+ const file=event.target.files[0];
+ if(!file)return;
+ try{
+  const loaded=JSON.parse(await file.text());
+  for(const key of Object.keys(sections)){
+   if(!Array.isArray(loaded[key]))throw new Error("Hiányzó vagy hibás rész: "+key);
+  }
+  data=loaded;
+  render();
+  status("Az adatfájl sikeresen betöltődött.");
+ }catch(error){
+  status("Betöltési hiba: "+error.message);
+ }
+ event.target.value="";
+});
+
+document.getElementById("reload").addEventListener("click",loadData);
+
+loadData();
+</script>
 </body>
 </html>
