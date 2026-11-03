@@ -2,255 +2,662 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vasberg Sports | Admin</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#101010;color:#eee;font-family:Arial,sans-serif}
-header{padding:24px;background:#080808;border-bottom:1px solid #b99a42}
-header h1{margin:0;color:#d4af37;letter-spacing:3px}
-header p{color:#999;margin-bottom:0}
-main{max-width:1050px;margin:auto;padding:22px}
-.status{padding:12px;background:#202020;border-left:3px solid #d4af37;margin-bottom:20px}
-nav,.actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
-button,.button{background:#242424;border:1px solid #806a2b;color:#e5c65d;padding:12px 15px;border-radius:5px;cursor:pointer;font-weight:bold}
-button:hover,.button:hover{background:#383020}
-button.active{background:#806a2b;color:white}
-.panel{background:#191919;border:1px solid #383838;padding:20px;border-radius:8px;margin-bottom:20px}
-h2{color:#d4af37;margin-top:0}
-h3{color:#e5c65d}
-.help{color:#aaa;line-height:1.6}
-textarea{width:100%;min-height:300px;background:#090909;color:#eee;border:1px solid #806a2b;border-radius:5px;padding:15px;font:14px/1.6 monospace}
-input,select{width:100%;padding:12px;margin:6px 0 14px;background:#090909;color:#fff;border:1px solid #806a2b;border-radius:5px}
-label{display:block;color:#ccc;font-size:14px}
-.team-card{border:1px solid #49402a;padding:16px;border-radius:7px;margin:15px 0;background:#141414}
-.team-card button{margin-right:6px}
-.danger{border-color:#923e3e;color:#ffaaaa}
-.hidden{display:none!important}
-input[type=file]{display:none}
-footer{text-align:center;color:#777;padding:30px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vasberg Sports – Admin</title>
+  <style>
+    :root {
+      --gold: #d4af37;
+      --bg: #090909;
+      --panel: #151515;
+      --border: #333;
+      --text: #f5f5f5;
+      --muted: #aaa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 18px;
+    }
+
+    h1 {
+      color: var(--gold);
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    h2 {
+      color: var(--gold);
+      margin-top: 0;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      background: #222;
+      color: white;
+      border: 1px solid var(--border);
+      padding: 11px 15px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .tab.active {
+      background: var(--gold);
+      color: #111;
+      border-color: var(--gold);
+    }
+
+    .panel {
+      display: none;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 7px;
+      font-weight: bold;
+      color: var(--gold);
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      background: #080808;
+      color: white;
+      border: 1px solid #444;
+      border-radius: 5px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 250px;
+      resize: vertical;
+      font-family: monospace;
+    }
+
+    button, .button {
+      display: inline-block;
+      background: var(--gold);
+      color: #111;
+      border: 0;
+      padding: 12px 16px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 8px 5px 8px 0;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    button.secondary, .button.secondary {
+      background: #333;
+      color: white;
+      border: 1px solid #555;
+    }
+
+    button.danger {
+      background: #8b2525;
+      color: white;
+    }
+
+    .team-card {
+      border: 1px solid #444;
+      border-radius: 7px;
+      padding: 16px;
+      margin: 15px 0;
+      background: #101010;
+    }
+
+    .team-card h3 {
+      color: var(--gold);
+      margin-top: 0;
+    }
+
+    .logo-preview {
+      display: block;
+      max-width: 180px;
+      max-height: 150px;
+      object-fit: contain;
+      margin-top: 12px;
+      background: #222;
+      padding: 8px;
+      border-radius: 5px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 15px;
+    }
+
+    .toolbar {
+      background: #151515;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+
+    .status {
+      color: var(--gold);
+      min-height: 22px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .panel {
+        padding: 14px;
+      }
+
+      .tab {
+        flex: 1 1 40%;
+      }
+
+      button, .button {
+        width: 100%;
+        margin: 6px 0;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header>
-<h1>VASBERG SPORTS</h1>
-<p>Content Management System</p>
-</header>
+  <div class="container">
 
-<main>
-<div class="status" id="status">Adatok betöltése...</div>
+    <header>
+      <h1>VASBERG SPORTS</h1>
+      <p>Adminisztrációs felület – csapatok, mérkőzések, tabellák, szponzorok és hírek kezelése.</p>
+    </header>
 
-<nav id="tabs">
-<button class="active" data-section="teams">Csapatok</button>
-<button data-section="matches">Mérkőzések</button>
-<button data-section="standings">Tabellák</button>
-<button data-section="sponsors">Szponzorok</button>
-<button data-section="news">Hírek</button>
-</nav>
+    <div class="tabs">
+      <button class="tab active" data-tab="teams">Csapatok</button>
+      <button class="tab" data-tab="matches">Mérkőzések</button>
+      <button class="tab" data-tab="standings">Tabellák</button>
+      <button class="tab" data-tab="sponsors">Szponzorok</button>
+      <button class="tab" data-tab="news">Hírek</button>
+    </div>
 
-<section class="panel" id="teamPanel">
-<h2>Csapatok kezelése</h2>
-<p class="help">Itt módosíthatod a csapatok adatait, hozzáadhatsz új csapatot vagy törölheted a meglévőket.</p>
-<div id="teamList"></div>
-<button id="addTeam">+ Új csapat hozzáadása</button>
-</section>
+    <section class="panel active" id="teams">
+      <h2>Csapatok kezelése</h2>
+      <p>Új csapat hozzáadása, meglévő csapat adatainak módosítása és logó feltöltése.</p>
 
-<section class="panel hidden" id="jsonPanel">
-<h2 id="sectionTitle">Mérkőzések</h2>
-<p class="help">A többi adatkategória egyelőre JSON-formátumban szerkeszthető.</p>
-<textarea id="editor" spellcheck="false"></textarea>
-<div class="actions">
-<button id="saveSection">Módosítás alkalmazása</button>
-</div>
-</section>
+      <div id="teamList"></div>
 
-<section class="panel">
-<h2>Adatok mentése</h2>
-<p class="help">A módosítások alkalmazása után töltsd le a teljes adatfájlt, majd töltsd fel a GitHub data mappájába.</p>
-<div class="actions">
-<button id="download">Teljes JSON letöltése</button>
-<label class="button" for="upload">JSON betöltése</label>
-<input id="upload" type="file" accept=".json,application/json">
-<button id="reload">Eredeti adatok újratöltése</button>
-</div>
-<a class="button" href="https://github.com/futuresult/Vasberg-Sports/tree/main/data" target="_blank" rel="noopener">GitHub adatfájlok</a>
-</section>
-</main>
+      <button id="addTeam">+ Új csapat hozzáadása</button>
+    </section>
 
-<footer>© VASBERG SPORTS</footer>
+    <section class="panel" id="matches">
+      <h2>Mérkőzések</h2>
+      <p class="hint">A mérkőzések adatait JSON formátumban szerkesztheted.</p>
+      <textarea id="matchesEditor"></textarea>
+      <button onclick="applySection('matches')">Módosítások alkalmazása</button>
+    </section>
 
-<script>
-const sections={
- teams:"Csapatok",
- matches:"Mérkőzések",
- standings:"Tabellák",
- sponsors:"Szponzorok",
- news:"Hírek"
-};
+    <section class="panel" id="standings">
+      <h2>Tabellák</h2>
+      <p class="hint">A tabellák adatait JSON formátumban szerkesztheted.</p>
+      <textarea id="standingsEditor"></textarea>
+      <button onclick="applySection('standings')">Módosítások alkalmazása</button>
+    </section>
 
-let data={};
-let currentSection="teams";
+    <section class="panel" id="sponsors">
+      <h2>Szponzorok</h2>
+      <p class="hint">A szponzorok adatait JSON formátumban szerkesztheted.</p>
+      <textarea id="sponsorsEditor"></textarea>
+      <button onclick="applySection('sponsors')">Módosítások alkalmazása</button>
+    </section>
 
-const statusBox=document.getElementById("status");
-const teamPanel=document.getElementById("teamPanel");
-const jsonPanel=document.getElementById("jsonPanel");
-const editor=document.getElementById("editor");
+    <section class="panel" id="news">
+      <h2>Hírek</h2>
+      <p class="hint">A hírek adatait JSON formátumban szerkesztheted.</p>
+      <textarea id="newsEditor"></textarea>
+      <button onclick="applySection('news')">Módosítások alkalmazása</button>
+    </section>
 
-function status(message){
- statusBox.textContent=message;
-}
+    <div class="toolbar">
+      <h2>Adatok mentése</h2>
+      <p>
+        A módosítások letöltéséhez kattints a mentés gombra.
+        A letöltött JSON fájlt töltsd fel a GitHubon a data mappába.
+      </p>
 
-async function loadData(){
- try{
-  const response=await fetch("data/site-data.json",{cache:"no-store"});
-  if(!response.ok)throw new Error("HTTP "+response.status);
-  data=await response.json();
+      <button id="download">💾 Mentés és letöltés</button>
 
-  for(const key of Object.keys(sections)){
-   if(!Array.isArray(data[key]))data[key]=[];
-  }
+      <label class="button secondary" for="upload">JSON fájl betöltése</label>
+      <input id="upload" type="file" accept=".json,application/json" style="display:none">
 
-  status("Az adatok sikeresen betöltődtek.");
- }catch(error){
-  data={
-   teams:[
-    {id:"narda",name:"Narda",sport:"Football",description:"",logo:""},
-    {id:"handball-vasberg",name:"Handball Vasberg",sport:"Handball",description:"",logo:""},
-    {id:"vasberg-basketball",name:"Vasberg Basketball",sport:"Basketball",description:"",logo:""}
-   ],
-   matches:[],standings:[],sponsors:[],news:[]
-  };
-  status("Nem sikerült betölteni az adatokat. Az alapértelmezett csapatlista látható.");
- }
- render();
-}
+      <button id="reload" class="secondary">Eredeti adatok újratöltése</button>
 
-function render(){
- const isTeams=currentSection==="teams";
- teamPanel.classList.toggle("hidden",!isTeams);
- jsonPanel.classList.toggle("hidden",isTeams);
+      <div class="status" id="status"></div>
+    </div>
 
- document.querySelectorAll("#tabs button").forEach(button=>{
-  button.classList.toggle("active",button.dataset.section===currentSection);
- });
+  </div>
 
- if(isTeams){
-  renderTeams();
- }else{
-  document.getElementById("sectionTitle").textContent=sections[currentSection];
-  editor.value=JSON.stringify(data[currentSection]||[],null,2);
- }
-}
+  <script>
+    let siteData = {
+      teams: [
+        {
+          id: "narda",
+          name: "Narda",
+          sport: "Football",
+          description: "",
+          logo: ""
+        },
+        {
+          id: "handball-vasberg",
+          name: "Handball Vasberg",
+          sport: "Handball",
+          description: "",
+          logo: ""
+        },
+        {
+          id: "vasberg-basketball",
+          name: "Vasberg Basketball",
+          sport: "Basketball",
+          description: "",
+          logo: ""
+        }
+      ],
+      matches: [],
+      standings: [],
+      sponsors: [],
+      news: []
+    };
 
-function renderTeams(){
- const list=document.getElementById("teamList");
- list.innerHTML="";
+    const statusBox = document.getElementById("status");
 
- data.teams.forEach((team,index)=>{
-  const card=document.createElement("div");
-  card.className="team-card";
+    function showStatus(message) {
+      statusBox.textContent = message;
+    }
 
-  const heading=document.createElement("h3");
-  heading.textContent=team.name||"Új csapat";
-  card.appendChild(heading);
+    function createId(name) {
+      return name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") || "team-" + Date.now();
+    }
 
-  const fields=[
-   ["Csapat neve","name",team.name],
-   ["Sportág","sport",team.sport],
-   ["Bemutatkozás","description",team.description],
-   ["Logó fájl elérési útja","logo",team.logo]
-  ];
+    async function loadData() {
+      try {
+        const response = await fetch("data/site-data.json", {
+          cache: "no-store"
+        });
 
-  fields.forEach(([label,key,value])=>{
-   const wrapper=document.createElement("label");
-   wrapper.textContent=label;
-   const input=document.createElement("input");
-   input.value=value||"";
-   input.addEventListener("input",()=>{
-    team[key]=input.value;
-    heading.textContent=team.name||"Új csapat";
-   });
-   wrapper.appendChild(input);
-   card.appendChild(wrapper);
-  });
+        if (!response.ok) {
+          throw new Error("Nem sikerült betölteni az adatfájlt.");
+        }
 
-  const remove=document.createElement("button");
-  remove.className="danger";
-  remove.textContent="Csapat törlése";
-  remove.addEventListener("click",()=>{
-   if(confirm("Biztosan törlöd ezt a csapatot?")){
-    data.teams.splice(index,1);
-    renderTeams();
-    status("A csapat törölve. A véglegesítéshez töltsd le az adatfájlt.");
-   }
-  });
-  card.appendChild(remove);
-  list.appendChild(card);
- });
-}
+        const loadedData = await response.json();
 
-document.querySelectorAll("#tabs button").forEach(button=>{
- button.addEventListener("click",()=>{
-  currentSection=button.dataset.section;
-  render();
- });
-});
+        siteData = {
+          teams: Array.isArray(loadedData.teams) ? loadedData.teams : [],
+          matches: Array.isArray(loadedData.matches) ? loadedData.matches : [],
+          standings: Array.isArray(loadedData.standings) ? loadedData.standings : [],
+          sponsors: Array.isArray(loadedData.sponsors) ? loadedData.sponsors : [],
+          news: Array.isArray(loadedData.news) ? loadedData.news : []
+        };
 
-document.getElementById("addTeam").addEventListener("click",()=>{
- data.teams.push({
-  id:"team-"+Date.now(),
-  name:"Új csapat",
-  sport:"",
-  description:"",
-  logo:""
- });
- renderTeams();
- status("Új csapat hozzáadva. Töltsd ki az adatait.");
-});
+        showStatus("Az adatok sikeresen betöltve.");
+      } catch (error) {
+        console.warn(error);
+        showStatus("Az alapértelmezett adatok használatban vannak. Ellenőrizd a data/site-data.json fájlt.");
+      }
 
-document.getElementById("saveSection").addEventListener("click",()=>{
- try{
-  const parsed=JSON.parse(editor.value);
-  if(!Array.isArray(parsed))throw new Error("JSON-tömb szükséges.");
-  data[currentSection]=parsed;
-  status("A(z) "+sections[currentSection]+" módosításai alkalmazva.");
- }catch(error){
-  status("Hibás JSON: "+error.message);
- }
-});
+      renderTeams();
+      renderEditors();
+    }
 
-document.getElementById("download").addEventListener("click",()=>{
- const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
- const url=URL.createObjectURL(blob);
- const link=document.createElement("a");
- link.href=url;
- link.download="site-data.json";
- link.click();
- setTimeout(()=>URL.revokeObjectURL(url),1000);
- status("A teljes adatfájl letöltése elindult.");
-});
+    function renderTeams() {
+      const list = document.getElementById("teamList");
+      list.innerHTML = "";
 
-document.getElementById("upload").addEventListener("change",async event=>{
- const file=event.target.files[0];
- if(!file)return;
- try{
-  const loaded=JSON.parse(await file.text());
-  for(const key of Object.keys(sections)){
-   if(!Array.isArray(loaded[key]))throw new Error("Hiányzó vagy hibás rész: "+key);
-  }
-  data=loaded;
-  render();
-  status("Az adatfájl sikeresen betöltődött.");
- }catch(error){
-  status("Betöltési hiba: "+error.message);
- }
- event.target.value="";
-});
+      siteData.teams.forEach((team, index) => {
+        const card = document.createElement("div");
+        card.className = "team-card";
 
-document.getElementById("reload").addEventListener("click",loadData);
+        const heading = document.createElement("h3");
+        heading.textContent = team.name || "Új csapat";
+        card.appendChild(heading);
 
-loadData();
-</script>
+        const nameLabel = document.createElement("label");
+        nameLabel.textContent = "Csapat neve";
+        card.appendChild(nameLabel);
+
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.value = team.name || "";
+        nameInput.placeholder = "Csapat neve";
+        nameInput.addEventListener("input", () => {
+          team.name = nameInput.value;
+          heading.textContent = team.name || "Új csapat";
+          if (!team.id || team.id.startsWith("team-")) {
+            team.id = createId(team.name);
+          }
+        });
+        card.appendChild(nameInput);
+
+        const sportLabel = document.createElement("label");
+        sportLabel.textContent = "Sportág";
+        card.appendChild(sportLabel);
+
+        const sportInput = document.createElement("input");
+        sportInput.type = "text";
+        sportInput.value = team.sport || "";
+        sportInput.placeholder = "Például: Football";
+        sportInput.addEventListener("input", () => {
+          team.sport = sportInput.value;
+        });
+        card.appendChild(sportInput);
+
+        const descriptionLabel = document.createElement("label");
+        descriptionLabel.textContent = "Leírás";
+        card.appendChild(descriptionLabel);
+
+        const descriptionInput = document.createElement("textarea");
+        descriptionInput.style.minHeight = "90px";
+        descriptionInput.value = team.description || "";
+        descriptionInput.placeholder = "A csapat rövid bemutatása";
+        descriptionInput.addEventListener("input", () => {
+          team.description = descriptionInput.value;
+        });
+        card.appendChild(descriptionInput);
+
+        const logoLabel = document.createElement("label");
+        logoLabel.textContent = "Csapatlogó feltöltése";
+        card.appendChild(logoLabel);
+
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+
+        const fileHint = document.createElement("p");
+        fileHint.className = "hint";
+        fileHint.textContent = "Válassz képet a telefon galériájából vagy a fájlok közül.";
+
+        card.appendChild(fileInput);
+        card.appendChild(fileHint);
+
+        const preview = document.createElement("img");
+        preview.className = "logo-preview";
+        preview.alt = "Csapatlogó előnézete";
+        preview.style.display = team.logo ? "block" : "none";
+
+        if (team.logo) {
+          preview.src = team.logo;
+        }
+
+        card.appendChild(preview);
+
+        fileInput.addEventListener("change", async () => {
+          const file = fileInput.files && fileInput.files[0];
+
+          if (!file) return;
+
+          if (!file.type.startsWith("image/")) {
+            alert("Kérlek, képfájlt válassz.");
+            fileInput.value = "";
+            return;
+          }
+
+          try {
+            showStatus("A logó feldolgozása folyamatban...");
+
+            const compressedImage = await compressImage(file);
+
+            team.logo = compressedImage;
+            preview.src = compressedImage;
+            preview.style.display = "block";
+
+            showStatus("A logó sikeresen feltöltve. A végleges mentéshez kattints a Mentés és letöltés gombra.");
+          } catch (error) {
+            console.error(error);
+            alert("Nem sikerült feldolgozni a képet.");
+          }
+        });
+
+        const removeLogoButton = document.createElement("button");
+        removeLogoButton.className = "secondary";
+        removeLogoButton.textContent = "Logó eltávolítása";
+
+        removeLogoButton.addEventListener("click", () => {
+          team.logo = "";
+          preview.removeAttribute("src");
+          preview.style.display = "none";
+          fileInput.value = "";
+          showStatus("A logó eltávolítva. Mentsd le a módosított adatokat.");
+        });
+
+        card.appendChild(removeLogoButton);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "danger";
+        deleteButton.textContent = "Csapat törlése";
+
+        deleteButton.addEventListener("click", () => {
+          if (!confirm("Biztosan törlöd ezt a csapatot?")) return;
+
+          siteData.teams.splice(index, 1);
+          renderTeams();
+          showStatus("A csapat törölve. A végleges mentéshez töltsd le a JSON fájlt.");
+        });
+
+        card.appendChild(deleteButton);
+        list.appendChild(card);
+      });
+    }
+
+    function compressImage(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          const image = new Image();
+
+          image.onload = () => {
+            const maxSize = 700;
+            let width = image.width;
+            let height = image.height;
+
+            if (width > height && width > maxSize) {
+              height = Math.round(height * maxSize / width);
+              width = maxSize;
+            } else if (height > maxSize) {
+              width = Math.round(width * maxSize / height);
+              height = maxSize;
+            }
+
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+
+            const context = canvas.getContext("2d");
+
+            if (!context) {
+              reject(new Error("Nem sikerült feldolgozni a képet."));
+              return;
+            }
+
+            context.drawImage(image, 0, 0, width, height);
+
+            resolve(canvas.toDataURL("image/jpeg", 0.78));
+          };
+
+          image.onerror = () => reject(new Error("Nem olvasható a kép."));
+          image.src = reader.result;
+        };
+
+        reader.onerror = () => reject(new Error("Nem sikerült beolvasni a fájlt."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById("addTeam").addEventListener("click", () => {
+      siteData.teams.push({
+        id: "team-" + Date.now(),
+        name: "",
+        sport: "",
+        description: "",
+        logo: ""
+      });
+
+      renderTeams();
+      showStatus("Új csapat hozzáadva.");
+    });
+
+    function renderEditors() {
+      ["matches", "standings", "sponsors", "news"].forEach(section => {
+        document.getElementById(section + "Editor").value =
+          JSON.stringify(siteData[section], null, 2);
+      });
+    }
+
+    function applySection(section) {
+      const editor = document.getElementById(section + "Editor");
+
+      try {
+        const parsed = JSON.parse(editor.value);
+
+        if (!Array.isArray(parsed)) {
+          throw new Error("A megadott adatnak JSON tömbnek kell lennie.");
+        }
+
+        siteData[section] = parsed;
+        showStatus("A(z) " + section + " módosításai alkalmazva.");
+      } catch (error) {
+        alert("Hibás JSON formátum: " + error.message);
+      }
+    }
+
+    document.querySelectorAll(".tab").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(tab => {
+          tab.classList.remove("active");
+        });
+
+        document.querySelectorAll(".panel").forEach(panel => {
+          panel.classList.remove("active");
+        });
+
+        button.classList.add("active");
+        document.getElementById(button.dataset.tab).classList.add("active");
+      });
+    });
+
+    document.getElementById("download").addEventListener("click", () => {
+      const json = JSON.stringify(siteData, null, 2);
+      const blob = new Blob([json], {
+        type: "application/json"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "site-data.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+
+      showStatus("A site-data.json letöltése elindult. Töltsd fel a GitHub data mappájába.");
+    });
+
+    document.getElementById("upload").addEventListener("change", async event => {
+      const file = event.target.files && event.target.files[0];
+
+      if (!file) return;
+
+      try {
+        const content = await file.text();
+        const imported = JSON.parse(content);
+
+        if (!imported || typeof imported !== "object") {
+          throw new Error("Érvénytelen adatfájl.");
+        }
+
+        siteData = {
+          teams: Array.isArray(imported.teams) ? imported.teams : [],
+          matches: Array.isArray(imported.matches) ? imported.matches : [],
+          standings: Array.isArray(imported.standings) ? imported.standings : [],
+          sponsors: Array.isArray(imported.sponsors) ? imported.sponsors : [],
+          news: Array.isArray(imported.news) ? imported.news : []
+        };
+
+        renderTeams();
+        renderEditors();
+
+        showStatus("A JSON fájl sikeresen betöltve.");
+      } catch (error) {
+        alert("Nem sikerült betölteni a JSON fájlt: " + error.message);
+      }
+
+      event.target.value = "";
+    });
+
+    document.getElementById("reload").addEventListener("click", () => {
+      if (!confirm("Biztosan újratöltöd az eredeti GitHub-adatokat? A még le nem mentett módosítások elveszhetnek.")) {
+        return;
+      }
+
+      loadData();
+    });
+
+    loadData();
+  </script>
 </body>
 </html>
