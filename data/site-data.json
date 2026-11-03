@@ -1,0 +1,29 @@
+{
+  "teams": [
+    {
+      "id": "narda",
+      "name": "Narda",
+      "sport": "Football",
+      "description": "",
+      "logo": ""
+    },
+    {
+      "id": "handball-vasberg",
+      "name": "Handball Vasberg",
+      "sport": "Handball",
+      "description": "",
+      "logo": ""
+    },
+    {
+      "id": "vasberg-basketball",
+      "name": "Vasberg Basketball",
+      "sport": "Basketball",
+      "description": "",
+      "logo": ""
+    }
+  ],
+  "matches": [],
+  "standings": [],
+  "sponsors": [],
+  "news": []
+}
